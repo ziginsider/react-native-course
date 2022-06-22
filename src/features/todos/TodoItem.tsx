@@ -22,7 +22,7 @@ export const TodoItem = ({item}: {item: Todo}) => {
   };
 
   return (
-    <TouchableOpacity onPress={onToggle} style={styles.todo}>
+    <TouchableOpacity style={styles.todo}>
       <CheckBox
         style={styles.checkbox}
         disabled={false}
