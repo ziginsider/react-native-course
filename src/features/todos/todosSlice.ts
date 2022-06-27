@@ -11,16 +11,6 @@ const initialState: Todo[] = [
   } as Todo,
 ];
 
-const sortTodosByComplete = function (c1: boolean, c2: boolean) {
-  if (c1 && !c2) {
-    return 1;
-  }
-  if (c2 && !c1) {
-    return -1;
-  }
-  return 0;
-};
-
 export const todosSlice = createSlice({
   name: 'todos',
   initialState,
@@ -31,27 +21,21 @@ export const todosSlice = createSlice({
         isCompleted: false,
         description: action.payload,
       } as Todo);
-      state.sort((item1, item2) =>
-        sortTodosByComplete(item1.isCompleted, item2.isCompleted),
-      );
     },
     todoToggled: (state, action: PayloadAction<string>) => {
-      const todo = state.find((todo) => todo.id === action.payload);
-      if (todo !== undefined) {
-        todo.isCompleted = !todo.isCompleted;
+      const toggledTodo = state.find((todo) => todo.id === action.payload);
+      if (toggledTodo !== undefined) {
+        toggledTodo.isCompleted = !toggledTodo.isCompleted;
       }
-      state.sort((item1, item2) =>
-        sortTodosByComplete(item1.isCompleted, item2.isCompleted),
-      );
     },
     todoDeleted: (state, action: PayloadAction<string>) => {
       const index = state.findIndex((todo) => todo.id === action.payload);
       state.splice(index, 1);
     },
     todoEdited: (state, action: PayloadAction<Todo>) => {
-      const todo = state.find((todo) => todo.id === action.payload.id);
-      if (todo !== undefined) {
-        todo.description = action.payload.description;
+      const editedTodo = state.find((todo) => todo.id === action.payload.id);
+      if (editedTodo !== undefined) {
+        editedTodo.description = action.payload.description;
       }
     },
   },
@@ -60,6 +44,13 @@ export const todosSlice = createSlice({
 export const {todoAdded, todoToggled, todoDeleted, todoEdited} =
   todosSlice.actions;
 
-export const selectTodos = (state: RootState) => state.todos;
+export const selectUncompletedTodos = (state: RootState) =>
+  state.todos.filter((todo) => !todo.isCompleted);
+
+export const selectCompletedTodos = (state: RootState) =>
+  state.todos.filter((todo) => todo.isCompleted);
+
+export const selectTodoById = (state: RootState, id: string) =>
+  state.todos.find((todo) => todo.id === id);
 
 export default todosSlice.reducer;

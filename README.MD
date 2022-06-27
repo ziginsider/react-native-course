@@ -1,28 +1,26 @@
-# Homework
+# Homework Module 3 - Navigation
 
 ## Description
 
-Create Todolist application using redux as state management.
+Todo app with Redux, navigation and Typescript
 
 ## Acceptance criteria
 
 As a user, I can
 
- - [x] read a list of tasks.
- - [x] add a task.
- - [x] mark any task as completed.
- - [x] delete any task.
- - [x] edit any task.
+ - [x] See on main page uncompleted tasks
+ - [x] See completed tasks on separate screen when I tap Completed button.
+ - [x] Create new task on separate screen when I tap Create new button.
+ - [x] Edit existing task on separate screen when I tap on this task.
 
 ## Subtasks
  
- - [x] All data should be stored in Redux instead React Context.
- - [x] Install plugin for debugging in Flipper
+ - [x] Install latest version https://reactnavigation.org
+ - [x] On main page create 3 buttons for navigation “Completed tasks” and “Create new”.
+ - [x] Create separate screens for “Completed”, “Create” and “Edit”
 
 ## Evaluation criteria
 
- - [x] All components should be functionals.
- - [x] React Context should be used as storage
  - [x] Task match with all acceptance criteria
 
 </br>
