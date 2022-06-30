@@ -3,12 +3,14 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {MainBottomTabParamList} from '../navigation/MainBottomTabParamList';
 import {Todos} from '../features/todos/Todos';
+import {Markers} from '../features/location_markers/Markers';
 
 const Tab = createBottomTabNavigator<MainBottomTabParamList>();
 
 export const Main = () => {
   const uncompletedTodos = () => <Todos isShowCompleted={false} />;
   const completedTodos = () => <Todos isShowCompleted={true} />;
+  const markers = () => <Markers />;
 
   return (
     <Tab.Navigator
@@ -19,6 +21,8 @@ export const Main = () => {
             iconName = 'recycle';
           } else if (route.name === 'Uncompleted') {
             iconName = 'check';
+          } else if (route.name === 'Markers') {
+            iconName = 'map-marker';
           }
           size = focused ? 25 : 20;
           color = '#348FEB';
@@ -32,6 +36,7 @@ export const Main = () => {
       }}>
       <Tab.Screen name="Uncompleted" component={uncompletedTodos} />
       <Tab.Screen name="Completed" component={completedTodos} />
+      <Tab.Screen name="Markers" component={markers} />
     </Tab.Navigator>
   );
 };
