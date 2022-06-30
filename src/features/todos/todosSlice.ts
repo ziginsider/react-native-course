@@ -1,6 +1,6 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {RootState} from '../../app/store';
-import {Todo} from '../../models/todo';
+import {Todo, TodoData} from '../../models/todo';
 import uuid from 'react-native-uuid';
 
 const initialState: Todo[] = [
@@ -15,11 +15,13 @@ export const todosSlice = createSlice({
   name: 'todos',
   initialState,
   reducers: {
-    todoAdded: (state, action: PayloadAction<string>) => {
+    todoAdded: (state, action: PayloadAction<TodoData>) => {
       state.push({
         id: uuid.v4(),
         isCompleted: false,
-        description: action.payload,
+        description: action.payload.description,
+        coordinates: action.payload.coordinates,
+        photoUrl: action.payload.photoUrl,
       } as Todo);
     },
     todoToggled: (state, action: PayloadAction<string>) => {
@@ -36,6 +38,8 @@ export const todosSlice = createSlice({
       const editedTodo = state.find((todo) => todo.id === action.payload.id);
       if (editedTodo !== undefined) {
         editedTodo.description = action.payload.description;
+        editedTodo.coordinates = action.payload.coordinates;
+        editedTodo.photoUrl = action.payload.photoUrl;
       }
     },
   },
@@ -52,5 +56,10 @@ export const selectCompletedTodos = (state: RootState) =>
 
 export const selectTodoById = (state: RootState, id: string) =>
   state.todos.find((todo) => todo.id === id);
+
+export const selectTodosCoordinates = (state: RootState) =>
+  state.todos
+    .map((todo) => todo.coordinates)
+    .filter((coordinate) => coordinate !== undefined);
 
 export default todosSlice.reducer;

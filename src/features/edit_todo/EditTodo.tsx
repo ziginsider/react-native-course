@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   TextInput,
   View,
@@ -6,28 +6,35 @@ import {
   Text,
   Button,
   Keyboard,
+  Image,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useAppDispatch} from '../../app/hooks';
-import {selectTodoById, todoAdded, todoEdited} from '../todos/todosSlice';
+import {selectTodoById} from '../todos/todosSlice';
 import {styles} from './edit.todo.styles';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {RootStackParamList} from '../../navigation/RootStackParams';
 import {
-  RouteProp,
+  editScreenProp,
+  editScreenRouteType,
+} from '../../navigation/RootStackParams';
+import {
   useFocusEffect,
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
 import {useSelector} from 'react-redux';
 import {RootState} from '../../app/store';
-
-type editScreenProp = StackNavigationProp<RootStackParamList, 'Edit'>;
-
-type editScreenRouteType = RouteProp<RootStackParamList, 'Edit'>;
+import {Coordinates} from '../../models/todo';
+import {
+  dispatchTodo,
+  getLocationText,
+  updateLocation,
+  updateScreen,
+} from './edit.todo.utils';
+import {ScrollView} from 'react-native-gesture-handler';
+import {getPhotoUri} from '../../services/photo/photo';
 
 export const EditTodoForm = () => {
-  const [inputValue, setInputValue] = React.useState('');
+  const [inputValue, setInputValue] = useState('');
 
   const dispatch = useAppDispatch();
 
@@ -41,15 +48,29 @@ export const EditTodoForm = () => {
     selectTodoById(state, todoId as string),
   );
 
+  const [isLocationPermissionAllowed, setLocationPermissionStatus] =
+    useState(false);
+
+  const [currentLocation, setCurrentLocation] = useState<Coordinates>();
+
+  /* eslint-disable */
   useFocusEffect(
     useCallback(() => {
-      const name = isUpdate ? 'EDIT TODO' : 'ADD TODO';
-      navigation.setOptions({title: name});
-      if (isUpdate) {
-        const updateDescription = todo?.description ?? '';
-        setInputValue(updateDescription);
-      }
-    }, [navigation, isUpdate, todo]),
+      updateScreen(
+        isUpdate,
+        navigation,
+        todo,
+        setInputValue,
+        setLocationPermissionStatus,
+        checkPermissionAndGetCurrentLocation,
+      );
+    }, [navigation, isUpdate, todo, isLocationPermissionAllowed]),
+  );
+  /* eslint-enable */
+
+  const checkPermissionAndGetCurrentLocation = updateLocation(
+    isLocationPermissionAllowed,
+    setCurrentLocation,
   );
 
   const clearInput = () => {
@@ -57,52 +78,64 @@ export const EditTodoForm = () => {
     setInputValue('');
   };
 
-  function throwExpression(errorMessage: string): never {
-    throw new Error(errorMessage);
-  }
+  const locationTxt = getLocationText(currentLocation);
 
-  const onEditTodo = () => {
-    if (isUpdate && inputValue.trim().length > 0) {
-      dispatch(
-        todoEdited({
-          id: todoId ?? throwExpression('The todo ID is undefined'),
-          isCompleted:
-            todo?.isCompleted ??
-            throwExpression("The 'isCompleted' parameter of todo is undefined"),
-          description: inputValue,
-        }),
-      );
-    } else if (inputValue.trim().length > 0) {
-      dispatch(todoAdded(inputValue));
-    }
+  const onSaveTodo = () => {
+    dispatchTodo(dispatch, isUpdate, inputValue, todo, currentLocation);
     clearInput();
     navigation.goBack();
   };
 
+  const goToCamera = () => {
+    console.log('id=', todoId);
+    navigation.navigate('Camera', {todoId: todoId ?? inputValue});
+  };
+
   return (
     <SafeAreaView style={styles.parentContainer}>
-      <View style={styles.inputContainer}>
-        <TextInput
-          autoFocus={true}
-          placeholder="Enter todo..."
-          style={styles.textInput}
-          onChangeText={(text) => setInputValue(text)}
-          value={inputValue}
-          onSubmitEditing={onEditTodo}
-        />
-        <TouchableOpacity
-          onPress={clearInput}
-          style={styles.clearIconContainer}>
-          <Text style={styles.texticonClose}> &#10005;</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.buttonContainer}>
-        <Button
-          title={isUpdate ? 'Save todo' : 'Add todo'}
-          onPress={onEditTodo}
-          disabled={!inputValue}
-        />
-      </View>
+      <ScrollView>
+        <View style={styles.inputContainer}>
+          <TextInput
+            autoFocus={true}
+            placeholder="Enter todo..."
+            style={styles.textInput}
+            onChangeText={(text) => setInputValue(text)}
+            value={inputValue}
+            onSubmitEditing={onSaveTodo}
+          />
+          <TouchableOpacity
+            onPress={clearInput}
+            style={styles.clearIconContainer}>
+            <Text style={styles.texticonClose}> &#10005;</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            title="open camera"
+            onPress={goToCamera}
+            disabled={!inputValue || !currentLocation || !todoId}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            title={isUpdate ? 'Update todo' : 'Add todo'}
+            onPress={onSaveTodo}
+            disabled={!inputValue || !currentLocation}
+          />
+        </View>
+        <View style={styles.locationContainer}>
+          <Text style={styles.locationText}>{locationTxt()}</Text>
+        </View>
+        <View style={styles.imageContainer}>
+          <Image
+            style={styles.imagePhoto}
+            source={{
+              uri: getPhotoUri(todoId),
+            }}
+            resizeMode="cover"
+          />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };

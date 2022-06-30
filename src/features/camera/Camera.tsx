@@ -1,59 +1,69 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet, View} from 'react-native';
-import {Permissions} from '../../services/permissions';
-import {Camera, useCameraDevices} from 'react-native-vision-camera';
+import React, {useRef, useState} from 'react';
+import {Button, StyleSheet, View} from 'react-native';
+import {
+  Camera,
+  TakePhotoOptions,
+  useCameraDevices,
+} from 'react-native-vision-camera';
+import {styles} from './camera.styles';
+import {useFocusEffect, useIsFocused, useRoute} from '@react-navigation/native';
+import {
+  requestCameraPermissionStatus,
+  requestStoragePermissionStatus,
+} from '../../services/permissions/permissions.requests';
+import {cameraScreenRouteType} from '../../navigation/RootStackParams';
+import {getTakePhotoHandler} from '../../services/photo/photo';
 
-export const Markers = () => {
+export const CameraView = () => {
   const devices = useCameraDevices();
   const device = devices.back;
+  const camera = useRef<Camera>(null);
+
   const [isCameraVisible, setCameraVisible] = useState(false);
+  const [isStoragePermission, setStoragePermission] = useState(false);
+  const isFocused = useIsFocused();
 
-  const requestCameraPermissionStatus = async () => {
-    const checkStatus = await Permissions.checkCameraPermission();
+  const {
+    params: {todoId},
+  } = useRoute<cameraScreenRouteType>();
 
-    if (Permissions.isGranted(checkStatus)) {
-      setCameraVisible(true);
-      console.debug('CAMERA PERMISSION GRANTED');
-    }
+  useFocusEffect(() => {
+    console.log(todoId);
+    requestCameraPermissionStatus(setCameraVisible);
+    requestStoragePermissionStatus(setStoragePermission);
+  });
 
-    if (
-      Permissions.isUnavailable(checkStatus) ||
-      Permissions.isBlocked(checkStatus)
-    ) {
-      setCameraVisible(false);
-      console.debug('AMERA PERMISSION DENIED');
-    }
-
-    // 4
-    if (Permissions.isDenied(checkStatus)) {
-      const requestStatus = await Permissions.requestCameraPermission();
-      if (Permissions.isGranted(requestStatus)) {
-        setCameraVisible(true);
-      } else {
-        setCameraVisible(false);
-      }
-    }
+  const takePhotoOptions: TakePhotoOptions = {
+    qualityPrioritization: 'speed',
+    skipMetadata: true,
+    flash: 'auto',
   };
 
-  useEffect(() => {
-    requestCameraPermissionStatus();
-  }, []);
+  const takePhotoHandler = getTakePhotoHandler(
+    camera,
+    takePhotoOptions,
+    todoId,
+  );
 
-  if (!isCameraVisible || !device) {
+  if (!isCameraVisible || !isStoragePermission || !device) {
     console.debug('No camera available', device);
     return null;
   }
 
   return (
-    <View style={{flex: 1}}>
+    <View style={styles.container}>
       <Camera
+        ref={camera}
         device={device}
-        isActive={true}
+        isActive={isFocused}
         style={StyleSheet.absoluteFill}
         frameProcessorFps={'auto'}
         orientation="portrait"
         photo={true}
       />
+      <View style={styles.captureBottonContainer}>
+        <Button title="take photo" onPress={takePhotoHandler} />
+      </View>
     </View>
   );
 };

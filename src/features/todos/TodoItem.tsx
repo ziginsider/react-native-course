@@ -17,7 +17,6 @@ export const TodoItem = ({item}: {item: Todo}) => {
   const navigation = useNavigation<todosScreenProp>();
 
   const onDeleteTodo = () => {
-    console.debug('>>>> item id = ', item.id);
     dispatch(todoDeleted(item.id));
   };
 
