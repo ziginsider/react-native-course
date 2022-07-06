@@ -21,5 +21,9 @@ As a user, I can
 
  - [x] Task match with all acceptance criteria
 
+## To fix react-native-vision-camera issues for iOS see
+
+- https://github.com/mrousavy/react-native-vision-camera/issues/195#issuecomment-879422807
+
 </br>
 <img alt="todo app" src="./img/app.gif" width="300">
