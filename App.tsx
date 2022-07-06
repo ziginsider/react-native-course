@@ -1,39 +1,28 @@
 import React from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  StatusBar,
-} from 'react-native';
+import {EditTodoForm} from './src/features/edit_todo/EditTodo';
+import {NavigationContainer} from '@react-navigation/native';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {createStackNavigator} from '@react-navigation/stack';
+import {RootStackParamList} from './src/navigation/RootStackParams';
+import {Main} from './src/screens/Main';
 
-import {Colors} from 'react-native/Libraries/NewAppScreen';
-import {Todos} from './src/features/todos/Todos';
+const Stack = createStackNavigator<RootStackParamList>();
 
 const App = () => {
   return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          keyboardShouldPersistTaps={'handled'}
-          style={styles.scrollView}>
-          <View style={styles.body}>
-            <Todos />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Main"
+            component={Main}
+            options={{title: 'TODO'}}
+          />
+          <Stack.Screen name="Edit" component={EditTodoForm} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 };
-
-const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
-  },
-  body: {
-    backgroundColor: Colors.white,
-  },
-});
 
 export default App;
