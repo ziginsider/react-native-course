@@ -1,15 +1,41 @@
 import {AnyAction} from '@reduxjs/toolkit';
 import {Dispatch} from 'react';
+import {Keyboard} from 'react-native';
 import {editScreenProp} from '../../navigation/RootStackParams';
 import {requestCurrentLocation} from '../../services/location/location';
 import {requestLocationPermissionStatus} from '../../services/permissions/permissions.requests';
 import {throwExpression} from '../../utils/utils';
 import {todoAdded, todoEdited} from '../todos/todosSlice';
-import {
-  Coordinates,
-  Todo,
-  TodoData,
-} from '/Users/Aliaksei_Kisel/Desktop/work/rn_course/project/module2/react_native_course/src/models/todo';
+import {Coordinates, Todo, TodoData} from '../../models/todo';
+import {UpdateScreen} from './edit.todo.hooks';
+
+interface DispatchTodo {
+  isUpdate: boolean;
+  description: string;
+  todo?: Todo;
+  newCoordinates?: Coordinates;
+  newPhotoUrlId?: string;
+}
+
+export function updateTodo(
+  updateData: UpdateScreen,
+  inputValue: string,
+  dispatch: Dispatch<AnyAction>,
+  setInputValue: React.Dispatch<React.SetStateAction<string>>,
+) {
+  return () => {
+    const dispatchData: DispatchTodo = {
+      isUpdate: updateData.isUpdate,
+      description: inputValue,
+      todo: updateData.todo,
+      newCoordinates: updateData.currentLocation,
+      newPhotoUrlId: updateData.todo?.id,
+    };
+    dispatchTodo(dispatch, dispatchData);
+    clearInput(setInputValue);
+    updateData.navigation.goBack();
+  };
+}
 
 export function getLocationText(currentLocation: Coordinates | undefined) {
   return () => {
@@ -53,18 +79,6 @@ export function updateScreen(
   );
 }
 
-function getTodoData(
-  newDescription: string,
-  newCoordinates?: Coordinates,
-  newPhotoUrl?: string,
-): TodoData {
-  return {
-    description: newDescription,
-    coordinates: newCoordinates,
-    photoUrl: newPhotoUrl,
-  } as TodoData;
-}
-
 function getEditedTodo(
   newDescription: string,
   newCoordinates?: Coordinates,
@@ -80,30 +94,37 @@ function getEditedTodo(
     description: newDescription,
     coordinates: newCoordinates,
     photoUrl: newPhotoUrl,
-  } as Todo;
+  };
 }
 
-export function dispatchTodo(
-  dispatch: Dispatch<AnyAction>,
-  isUpdate: boolean,
-  description: string,
-  todo?: Todo,
-  newCoordinates?: Coordinates,
-  newPhotoUrl?: string,
-) {
-  if (isUpdate && description.trim().length > 0) {
-    dispatch(
+function dispatchTodo(rootDispatch: Dispatch<AnyAction>, data: DispatchTodo) {
+  if (data.isUpdate && data.description.trim().length > 0) {
+    rootDispatch(
       todoEdited(
         getEditedTodo(
-          description,
-          newCoordinates,
-          newPhotoUrl,
-          todo?.id,
-          todo?.isCompleted,
+          data.description,
+          data.newCoordinates,
+          data.newPhotoUrlId,
+          data.todo?.id,
+          data.todo?.isCompleted,
         ),
       ),
     );
-  } else if (description.trim().length > 0) {
-    dispatch(todoAdded(getTodoData(description, newCoordinates, newPhotoUrl)));
+  } else if (data.description.trim().length > 0) {
+    const todoData: TodoData = {
+      description: data.description,
+      coordinates: data.newCoordinates,
+      photoUrl: data.newPhotoUrlId,
+    };
+    rootDispatch(todoAdded(todoData));
   }
+}
+
+export function clearInput(
+  setInputValue: React.Dispatch<React.SetStateAction<string>>,
+) {
+  return () => {
+    Keyboard.dismiss();
+    setInputValue('');
+  };
 }

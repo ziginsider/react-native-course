@@ -19,7 +19,7 @@ export const requestCurrentLocation = (
         return {
           lat: location.latitude,
           lng: location.longitude,
-        } as Coordinates;
+        };
       }
     })
     .catch((error) => {

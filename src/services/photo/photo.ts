@@ -1,13 +1,20 @@
 import {Camera, TakePhotoOptions} from 'react-native-vision-camera';
 import RNFS from 'react-native-fs';
 
+const takePhotoOptions: TakePhotoOptions = {
+  qualityPrioritization: 'speed',
+  skipMetadata: true,
+  flash: 'auto',
+};
+
 export function getTakePhotoHandler(
   camera: React.RefObject<Camera>,
-  takePhotoOptions: TakePhotoOptions,
-  photoId: string,
+  photoId?: string,
 ) {
+  if (!photoId) {
+    return;
+  }
   return async () => {
-    console.log('start foto');
     try {
       const photo = await camera.current?.takePhoto(takePhotoOptions);
       console.log(photo?.path);

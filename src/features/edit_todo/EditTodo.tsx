@@ -1,99 +1,43 @@
-import React, {useCallback, useState} from 'react';
+import React, {useState} from 'react';
 import {
   TextInput,
   View,
   TouchableOpacity,
   Text,
   Button,
-  Keyboard,
   Image,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {useAppDispatch} from '../../app/hooks';
-import {selectTodoById} from '../todos/todosSlice';
 import {styles} from './edit.todo.styles';
-import {
-  editScreenProp,
-  editScreenRouteType,
-} from '../../navigation/RootStackParams';
-import {
-  useFocusEffect,
-  useNavigation,
-  useRoute,
-} from '@react-navigation/native';
-import {useSelector} from 'react-redux';
-import {RootState} from '../../app/store';
-import {Coordinates} from '../../models/todo';
-import {
-  dispatchTodo,
-  getLocationText,
-  updateLocation,
-  updateScreen,
-} from './edit.todo.utils';
+import {clearInput, getLocationText, updateTodo} from './edit.todo.utils';
 import {ScrollView} from 'react-native-gesture-handler';
 import {getPhotoUri} from '../../services/photo/photo';
+import {useAppDispatch} from '../../app/hooks';
+import {UpdateScreen as UpdateScreen, useUpdateScreen} from './edit.todo.hooks';
 
 export const EditTodoForm = () => {
   const [inputValue, setInputValue] = useState('');
 
   const dispatch = useAppDispatch();
 
-  const navigation = useNavigation<editScreenProp>();
+  const updateData: UpdateScreen = useUpdateScreen(setInputValue);
 
-  const {
-    params: {isUpdate, todoId},
-  } = useRoute<editScreenRouteType>();
+  const locationTxt = getLocationText(updateData.currentLocation);
 
-  const todo = useSelector((state: RootState) =>
-    selectTodoById(state, todoId as string),
+  const onSaveTodo = updateTodo(
+    updateData,
+    inputValue,
+    dispatch,
+    setInputValue,
   );
-
-  const [isLocationPermissionAllowed, setLocationPermissionStatus] =
-    useState(false);
-
-  const [currentLocation, setCurrentLocation] = useState<Coordinates>();
-
-  /* eslint-disable */
-  useFocusEffect(
-    useCallback(() => {
-      updateScreen(
-        isUpdate,
-        navigation,
-        todo,
-        setInputValue,
-        setLocationPermissionStatus,
-        checkPermissionAndGetCurrentLocation,
-      );
-    }, [navigation, isUpdate, todo, isLocationPermissionAllowed]),
-  );
-  /* eslint-enable */
-
-  const checkPermissionAndGetCurrentLocation = updateLocation(
-    isLocationPermissionAllowed,
-    setCurrentLocation,
-  );
-
-  const clearInput = () => {
-    Keyboard.dismiss();
-    setInputValue('');
-  };
-
-  const locationTxt = getLocationText(currentLocation);
-
-  const onSaveTodo = () => {
-    dispatchTodo(dispatch, isUpdate, inputValue, todo, currentLocation);
-    clearInput();
-    navigation.goBack();
-  };
 
   const goToCamera = () => {
-    console.log('id=', todoId);
-    navigation.navigate('Camera', {todoId: todoId ?? inputValue});
+    updateData.navigation.navigate('Camera', {todoId: updateData?.todo?.id});
   };
 
   return (
     <SafeAreaView style={styles.parentContainer}>
-      <ScrollView>
+      <ScrollView keyboardShouldPersistTaps={'always'}>
         <View style={styles.inputContainer}>
           <TextInput
             autoFocus={true}
@@ -104,7 +48,7 @@ export const EditTodoForm = () => {
             onSubmitEditing={onSaveTodo}
           />
           <TouchableOpacity
-            onPress={clearInput}
+            onPress={clearInput(setInputValue)}
             style={styles.clearIconContainer}>
             <Text style={styles.texticonClose}> &#10005;</Text>
           </TouchableOpacity>
@@ -113,14 +57,18 @@ export const EditTodoForm = () => {
           <Button
             title="open camera"
             onPress={goToCamera}
-            disabled={!inputValue || !currentLocation || !todoId}
+            disabled={
+              !inputValue ||
+              !updateData.currentLocation ||
+              !updateData?.todo?.id
+            }
           />
         </View>
         <View style={styles.buttonContainer}>
           <Button
-            title={isUpdate ? 'Update todo' : 'Add todo'}
+            title={updateData.isUpdate ? 'Update todo' : 'Add todo'}
             onPress={onSaveTodo}
-            disabled={!inputValue || !currentLocation}
+            disabled={!inputValue || !updateData.currentLocation}
           />
         </View>
         <View style={styles.locationContainer}>
@@ -130,7 +78,7 @@ export const EditTodoForm = () => {
           <Image
             style={styles.imagePhoto}
             source={{
-              uri: getPhotoUri(todoId),
+              uri: getPhotoUri(updateData?.todo?.id),
             }}
             resizeMode="cover"
           />

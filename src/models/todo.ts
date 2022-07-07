@@ -3,17 +3,13 @@ export interface Coordinates {
   lng: number;
 }
 
-export interface Todo {
-  readonly id: string;
-  isCompleted: boolean;
+export interface TodoData {
   description: string;
   coordinates?: Coordinates;
   photoUrl?: string;
 }
 
-// The data needed to create new Todo
-export interface TodoData {
-  description: string;
-  coordinates?: Coordinates;
-  photoUrl?: string;
+export interface Todo extends TodoData {
+  readonly id: string;
+  isCompleted: boolean;
 }

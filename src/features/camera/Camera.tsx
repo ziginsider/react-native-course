@@ -1,52 +1,28 @@
-import React, {useRef, useState} from 'react';
+import React, {useRef} from 'react';
 import {Button, StyleSheet, View} from 'react-native';
-import {
-  Camera,
-  TakePhotoOptions,
-  useCameraDevices,
-} from 'react-native-vision-camera';
+import {Camera, useCameraDevices} from 'react-native-vision-camera';
 import {styles} from './camera.styles';
-import {useFocusEffect, useIsFocused, useRoute} from '@react-navigation/native';
-import {
-  requestCameraPermissionStatus,
-  requestStoragePermissionStatus,
-} from '../../services/permissions/permissions.requests';
+import {useIsFocused, useRoute} from '@react-navigation/native';
 import {cameraScreenRouteType} from '../../navigation/RootStackParams';
 import {getTakePhotoHandler} from '../../services/photo/photo';
+import {useCheckPhotoPermissions} from '../../services/photo/hooks';
 
 export const CameraView = () => {
-  const devices = useCameraDevices();
-  const device = devices.back;
-  const camera = useRef<Camera>(null);
+  const [isCameraPermission, isStoragePermission] = useCheckPhotoPermissions();
 
-  const [isCameraVisible, setCameraVisible] = useState(false);
-  const [isStoragePermission, setStoragePermission] = useState(false);
   const isFocused = useIsFocused();
+  const devices = useCameraDevices();
+  const camera = useRef<Camera>(null);
+  const device = devices.back;
 
   const {
     params: {todoId},
   } = useRoute<cameraScreenRouteType>();
 
-  useFocusEffect(() => {
-    console.log(todoId);
-    requestCameraPermissionStatus(setCameraVisible);
-    requestStoragePermissionStatus(setStoragePermission);
-  });
+  const takePhotoHandler = getTakePhotoHandler(camera, todoId);
 
-  const takePhotoOptions: TakePhotoOptions = {
-    qualityPrioritization: 'speed',
-    skipMetadata: true,
-    flash: 'auto',
-  };
-
-  const takePhotoHandler = getTakePhotoHandler(
-    camera,
-    takePhotoOptions,
-    todoId,
-  );
-
-  if (!isCameraVisible || !isStoragePermission || !device) {
-    console.debug('No camera available', device);
+  if (!isCameraPermission || !isStoragePermission || !device) {
+    console.warn('No camera available', device);
     return null;
   }
 
