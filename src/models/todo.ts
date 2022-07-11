@@ -10,6 +10,6 @@ export interface TodoData {
 }
 
 export interface Todo extends TodoData {
-  readonly id: string;
+  readonly id: string | number[];
   isCompleted: boolean;
 }

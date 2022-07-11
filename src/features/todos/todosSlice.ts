@@ -5,7 +5,7 @@ import uuid from 'react-native-uuid';
 
 const initialState: Todo[] = [
   {
-    id: uuid.v4.toString(),
+    id: uuid.v4(),
     isCompleted: false,
     description: 'initial todo',
   },
@@ -17,7 +17,7 @@ export const todosSlice = createSlice({
   reducers: {
     todoAdded: (state: Todo[], action: PayloadAction<TodoData>) => {
       state.push({
-        id: uuid.v4.toString(),
+        id: uuid.v4(),
         isCompleted: false,
         description: action.payload.description,
         coordinates: action.payload.coordinates,
