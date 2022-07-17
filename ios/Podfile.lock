@@ -338,9 +338,10 @@ PODS:
     - React-Core
   - SocketRocket (0.6.0)
   - VisionCamera (2.13.0):
-    - React
+    - Folly (= 2020.01.13.00)
     - React-callinvoker
     - React-Core
+    - ReactCommon/turbomodule/core
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
     - Yoga (~> 1.14)
@@ -565,7 +566,7 @@ SPEC CHECKSUMS:
   RNScreens: e8e8dd0588b5da0ab57dcca76ab9b2d8987757e0
   RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
-  VisionCamera: c118dff01ce899ba26066e1786e19181ef296283
+  VisionCamera: 6a29e8ba9128cc0438dba263c10d499c89559858
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 

@@ -5,6 +5,7 @@ import {
   completedTodosTab,
   markersTab,
   setTabIcons,
+  squareTab,
   tabBarOptions,
   uncompletedTodosTab,
 } from './screens_jsx_elements/MainTabNavigatorElements';
@@ -19,6 +20,7 @@ export const Main = () => {
       <Tab.Screen name="Uncompleted" component={uncompletedTodosTab} />
       <Tab.Screen name="Completed" component={completedTodosTab} />
       <Tab.Screen name="Markers" component={markersTab} />
+      <Tab.Screen name="Square" component={squareTab} />
     </Tab.Navigator>
   );
 };

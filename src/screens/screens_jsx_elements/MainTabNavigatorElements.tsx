@@ -4,6 +4,7 @@ import {MainBottomTabParamList} from '../../navigation/MainBottomTabParamList';
 import {Todos} from '../../features/todos/Todos';
 import {Markers} from '../../features/location_markers/Markers';
 import {RouteProp} from '@react-navigation/native';
+import {Square} from '../../features/animation/Square';
 
 export const uncompletedTodosTab = () => <Todos isShowCompleted={false} />;
 
@@ -11,10 +12,13 @@ export const completedTodosTab = () => <Todos isShowCompleted={true} />;
 
 export const markersTab = () => <Markers />;
 
+export const squareTab = () => <Square />;
+
 const navigationTabIcons = {
   Completed: 'recycle',
   Uncompleted: 'check',
   Markers: 'map-marker',
+  Square: 'square',
 };
 
 const getIconName = (routeName: keyof MainBottomTabParamList): string => {
@@ -24,6 +28,8 @@ const getIconName = (routeName: keyof MainBottomTabParamList): string => {
     return navigationTabIcons.Uncompleted;
   } else if (routeName === 'Markers') {
     return navigationTabIcons.Markers;
+  } else if (routeName === 'Square') {
+    return navigationTabIcons.Square;
   } else {
     return navigationTabIcons.Completed;
   }
