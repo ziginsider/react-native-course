@@ -36,4 +36,20 @@ export const styles = StyleSheet.create({
     marginRight: 20,
     padding: 10,
   },
+  locationContainer: {
+    margin: 15,
+    alignItems: 'center',
+  },
+  locationText: {
+    fontSize: 10,
+  },
+  imageContainer: {
+    paddingTop: 50,
+    margin: 10,
+  },
+  imagePhoto: {
+    width: '100%',
+    height: undefined,
+    aspectRatio: 1,
+  },
 });

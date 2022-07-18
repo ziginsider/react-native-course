@@ -1,16 +1,14 @@
 import React from 'react';
 import {styles} from './todos.styles';
-import {View, FlatList, Text, Button} from 'react-native';
+import {View, FlatList, Button} from 'react-native';
 import {useAppSelector} from '../../app/hooks';
 import {TodoItem} from './TodoItem';
 import {selectUncompletedTodos, selectCompletedTodos} from './todosSlice';
 import {Todo} from '../../models/todo';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {RootStackParamList} from '../../navigation/RootStackParams';
 import {useNavigation} from '@react-navigation/native';
-
-type todosScreenProp = StackNavigationProp<RootStackParamList, 'Main'>;
+import {emptyState} from '../../screens/screens_jsx_elements/TodosElements';
+import {todosScreenProp} from '../../navigation/RootStackParams';
 
 export const Todos = ({isShowCompleted}: {isShowCompleted: boolean}) => {
   const todos = useAppSelector(
@@ -21,14 +19,6 @@ export const Todos = ({isShowCompleted}: {isShowCompleted: boolean}) => {
 
   const onGoToAddTodoHandler = () => {
     navigation.navigate('Edit', {isUpdate: false});
-  };
-
-  const emptyState = () => {
-    return (
-      <View style={styles.containerEmpty}>
-        <Text style={styles.emptyState}> empty list</Text>
-      </View>
-    );
   };
 
   return (

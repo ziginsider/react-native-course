@@ -60,5 +60,11 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSCameraUsageDescription</key>
+	<string>This lets you take and save photos for your todos.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>This lets you keep geolocation for your todos.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>This lets your save photos for your todos.</string>
 </dict>
 </plist>

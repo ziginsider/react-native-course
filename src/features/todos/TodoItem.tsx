@@ -5,11 +5,8 @@ import {Todo} from '../../models/todo';
 import {useAppDispatch} from '../../app/hooks';
 import {todoDeleted, todoToggled} from './todosSlice';
 import {styles} from './todoitem.styles';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {RootStackParamList} from '../../navigation/RootStackParams';
+import {todosScreenProp} from '../../navigation/RootStackParams';
 import {useNavigation} from '@react-navigation/native';
-
-type todosScreenProp = StackNavigationProp<RootStackParamList, 'Main'>;
 
 export const TodoItem = ({item}: {item: Todo}) => {
   const dispatch = useAppDispatch();
@@ -17,7 +14,6 @@ export const TodoItem = ({item}: {item: Todo}) => {
   const navigation = useNavigation<todosScreenProp>();
 
   const onDeleteTodo = () => {
-    console.debug('>>>> item id = ', item.id);
     dispatch(todoDeleted(item.id));
   };
 
@@ -26,7 +22,7 @@ export const TodoItem = ({item}: {item: Todo}) => {
   };
 
   const onEditTodo = () => {
-    navigation.navigate('Edit', {isUpdate: true, todoId: item.id});
+    navigation.navigate('Edit', {isUpdate: true, todo: item});
   };
 
   return (
