@@ -3,4 +3,5 @@ export type MainBottomTabParamList = {
   Completed: undefined;
   Markers: undefined;
   Square: undefined;
+  Cats: undefined;
 };
