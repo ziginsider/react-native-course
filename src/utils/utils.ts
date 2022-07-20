@@ -5,7 +5,7 @@ export function throwExpression(errorMessage: string): never {
 }
 
 export function showAlert(title: string, message: string) {
-  Alert.alert('Alert Title', `Image id = ${message}`, [
+  Alert.alert(title, `Image id = ${message}`, [
     {text: 'OK', onPress: () => console.log('OK Pressed')},
   ]);
 }
