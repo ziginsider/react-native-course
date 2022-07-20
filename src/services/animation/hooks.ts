@@ -15,7 +15,7 @@ export function useDoublePressSwitch(): [boolean, () => void] {
   return [
     isPressed,
     () => {
-      var delta = new Date().getTime() - pressTimestamp;
+      const delta = new Date().getTime() - pressTimestamp;
 
       console.log(`PRESS timestamp=${pressTimestamp}, delta=${delta}`);
 
